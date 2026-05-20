@@ -1,29 +1,192 @@
 # Acessibilidade API
 
-API desenvolvida para hackathon com o objetivo de persistir preferências de acessibilidade de usuários corporativos e registrar auditoria de alterações.
+API desenvolvida para hackathon com o objetivo de persistir preferencias de acessibilidade de usuarios corporativos e registrar auditoria de alteracoes.
 
 ## Tecnologias
 
 - Java 21
-- Spring Boot
+- Spring Boot 3
 - Maven
 - PostgreSQL
 - Docker Compose
-- Python para manipulação administrativa do banco
+- BCrypt para senha
+- JWT para autenticacao
+- Swagger/OpenAPI para documentacao interativa
 
 ## Funcionalidades
 
-- Cadastro de perfil de usuário
-- Validação de e-mail corporativo `@caixa.gov.br`
+- Cadastro de perfil de usuario
+- Validacao de e-mail corporativo `@caixa.gov.br`
 - Senha criptografada com BCrypt
-- Persistência de preferências de acessibilidade
-- Auditoria de alterações de perfil
-- Banco PostgreSQL em Docker
+- Login com token JWT
+- Persistencia de preferencias de acessibilidade
+- Auditoria de cadastro, login e alteracoes de perfil
+- Tratamento padronizado de erros HTTP
+- CORS configuravel para integracao com front Angular
 
-## Endpoints principais
+## Como rodar
+
+Suba o PostgreSQL:
+
+```powershell
+docker compose up -d
+```
+
+Inicie a API:
+
+```powershell
+mvn spring-boot:run
+```
+
+A API roda em:
 
 ```text
+http://localhost:8080
+```
+
+A documentacao interativa fica em:
+
+```text
+http://localhost:8080/swagger-ui.html
+```
+
+## Configuracoes
+
+As principais configuracoes ficam em `src/main/resources/application.yaml`.
+
+Variaveis de ambiente suportadas:
+
+```text
+SPRING_DATASOURCE_URL
+SPRING_DATASOURCE_USERNAME
+SPRING_DATASOURCE_PASSWORD
+JWT_SECRET
+APP_CORS_ALLOWED_ORIGIN
+```
+
+Por padrao, o front liberado no CORS e:
+
+```text
+http://localhost:4200
+```
+
+## Endpoints
+
+### Criar perfil
+
+```http
 POST /api/v1/perfis
-GET  /api/v1/perfis/{email}
-PUT  /api/v1/perfis/{email}
-GET  /api/v1/perfis/{email}/auditoria
+```
+
+Body:
+
+```json
+{
+  "email": "usuario@caixa.gov.br",
+  "senha": "SenhaForte123",
+  "tamanhoTexto": 16,
+  "contraste": true,
+  "aparencia": false,
+  "espacamento": 1.5,
+  "guiaLeitura": true,
+  "navegTeclado": true
+}
+```
+
+### Login
+
+```http
+POST /api/v1/auth/login
+```
+
+Body:
+
+```json
+{
+  "email": "usuario@caixa.gov.br",
+  "senha": "SenhaForte123"
+}
+```
+
+Resposta inclui o token JWT:
+
+```json
+{
+  "mensagem": "Login realizado com sucesso.",
+  "token": "...",
+  "tokenExpiraEm": "2026-05-20T16:45:00",
+  "email": "usuario@caixa.gov.br",
+  "tamanhoTexto": 16,
+  "contraste": true,
+  "aparencia": false,
+  "espacamento": 1.5,
+  "guiaLeitura": true,
+  "navegTeclado": true
+}
+```
+
+### Consultar perfil
+
+```http
+POST /api/v1/perfis/consultar
+Authorization: Bearer TOKEN
+```
+
+Body:
+
+```json
+{
+  "email": "usuario@caixa.gov.br"
+}
+```
+
+### Atualizar preferencias
+
+```http
+PUT /api/v1/perfis
+Authorization: Bearer TOKEN
+```
+
+Body:
+
+```json
+{
+  "email": "usuario@caixa.gov.br",
+  "tamanhoTexto": 18,
+  "contraste": true,
+  "aparencia": true,
+  "espacamento": 2.0,
+  "guiaLeitura": false,
+  "navegTeclado": true
+}
+```
+
+### Consultar auditoria
+
+```http
+POST /api/v1/perfis/auditoria
+Authorization: Bearer TOKEN
+```
+
+Body:
+
+```json
+{
+  "email": "usuario@caixa.gov.br"
+}
+```
+
+## Erros
+
+Os erros retornam um corpo padronizado:
+
+```json
+{
+  "timestamp": "2026-05-20T16:30:00",
+  "status": 401,
+  "erro": "Unauthorized",
+  "detalhes": [
+    "Token invalido."
+  ]
+}
+```

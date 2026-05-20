@@ -2,7 +2,7 @@ package com.acessibilidade.api.controller;
 
 import com.acessibilidade.api.dto.LoginRequest;
 import com.acessibilidade.api.dto.LoginResponse;
-import com.acessibilidade.api.service.UsuarioPerfilService;
+import com.acessibilidade.api.service.AuthService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private final UsuarioPerfilService service;
+    private final AuthService service;
 
-    public AuthController(UsuarioPerfilService service) {
+    public AuthController(AuthService service) {
         this.service = service;
     }
 
