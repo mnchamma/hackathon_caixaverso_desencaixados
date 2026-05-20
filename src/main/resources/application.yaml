@@ -30,3 +30,4 @@ jwt:
 app:
   cors:
     allowed-origin: ${APP_CORS_ALLOWED_ORIGIN:http://localhost:4200}
+    allowed-origin-patterns: ${APP_CORS_ALLOWED_ORIGIN_PATTERNS:http://localhost:4200,http://127.0.0.1:4200,chrome-extension://*,moz-extension://*,edge-extension://*}
