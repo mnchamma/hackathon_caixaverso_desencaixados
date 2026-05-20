@@ -2,12 +2,15 @@ package com.acessibilidade.api.service;
 
 import com.acessibilidade.api.dto.AtualizarPreferenciasRequest;
 import com.acessibilidade.api.dto.CriarUsuarioRequest;
+import com.acessibilidade.api.dto.LoginRequest;
+import com.acessibilidade.api.dto.LoginResponse;
 import com.acessibilidade.api.model.AuditoriaPerfil;
 import com.acessibilidade.api.model.UsuarioPerfil;
 import com.acessibilidade.api.repository.AuditoriaPerfilRepository;
 import com.acessibilidade.api.repository.UsuarioPerfilRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -48,7 +51,47 @@ public class UsuarioPerfilService {
         usuario.setNavegTeclado(Boolean.TRUE.equals(request.getNavegTeclado()));
         usuario.setInterfaceSimplif(Boolean.TRUE.equals(request.getInterfaceSimplif()));
 
-        return usuarioRepository.save(usuario);
+        UsuarioPerfil usuarioSalvo = usuarioRepository.save(usuario);
+
+        auditar(
+                usuarioSalvo.getEmail(),
+                "CADASTRO",
+                null,
+                "Perfil de acessibilidade criado"
+        );
+
+        return usuarioSalvo;
+    }
+
+    public LoginResponse login(LoginRequest request) {
+        validarEmailCaixa(request.getEmail());
+
+        String emailNormalizado = request.getEmail().toLowerCase();
+
+        UsuarioPerfil usuario = usuarioRepository.findByEmail(emailNormalizado)
+                .orElseThrow(() -> new RuntimeException("E-mail ou senha inválidos."));
+
+        boolean senhaValida = passwordEncoder.matches(
+                request.getSenha(),
+                usuario.getSenha()
+        );
+
+        if (!senhaValida) {
+            throw new RuntimeException("E-mail ou senha inválidos.");
+        }
+
+        return new LoginResponse(
+                "Login realizado com sucesso.",
+                usuario.getEmail(),
+                usuario.getPreferencia(),
+                usuario.getTamanhoTexto(),
+                usuario.getContraste(),
+                usuario.getAparencia(),
+                usuario.getEspacamento(),
+                usuario.getDestaque(),
+                usuario.getNavegTeclado(),
+                usuario.getInterfaceSimplif()
+        );
     }
 
     public UsuarioPerfil buscarPorEmail(String email) {
@@ -86,6 +129,12 @@ public class UsuarioPerfilService {
         return usuarioRepository.save(usuario);
     }
 
+    public List<AuditoriaPerfil> buscarAuditoriaPorUsuario(String email) {
+        validarEmailCaixa(email);
+
+        return auditoriaRepository.findByUsuarioEmailOrderByDataAlteracaoDesc(email.toLowerCase());
+    }
+
     private void validarEmailCaixa(String email) {
         if (email == null || !email.toLowerCase().endsWith("@caixa.gov.br")) {
             throw new RuntimeException("Apenas e-mails @caixa.gov.br são permitidos.");
@@ -102,17 +151,11 @@ public class UsuarioPerfilService {
         }
 
         AuditoriaPerfil auditoria = new AuditoriaPerfil();
-        auditoria.setUsuarioEmail(email);
+        auditoria.setUsuarioEmail(email.toLowerCase());
         auditoria.setCampoAlterado(campo);
         auditoria.setValorAnterior(valorAnterior);
         auditoria.setValorNovo(valorNovo);
 
         auditoriaRepository.save(auditoria);
-    }
-    
-    public List<AuditoriaPerfil> buscarAuditoriaPorUsuario(String email) {
-        validarEmailCaixa(email);
-
-        return auditoriaRepository.findByUsuarioEmailOrderByDataAlteracaoDesc(email.toLowerCase());
     }
 }
