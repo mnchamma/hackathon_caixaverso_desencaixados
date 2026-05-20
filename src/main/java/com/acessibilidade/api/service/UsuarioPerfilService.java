@@ -3,12 +3,11 @@ package com.acessibilidade.api.service;
 import com.acessibilidade.api.dto.AtualizarPreferenciasRequest;
 import com.acessibilidade.api.dto.BuscarPerfilRequest;
 import com.acessibilidade.api.dto.CriarUsuarioRequest;
-import com.acessibilidade.api.dto.LoginRequest;
-import com.acessibilidade.api.dto.LoginResponse;
+import com.acessibilidade.api.exception.ApiException;
 import com.acessibilidade.api.model.AuditoriaPerfil;
 import com.acessibilidade.api.model.UsuarioPerfil;
-import com.acessibilidade.api.repository.AuditoriaPerfilRepository;
 import com.acessibilidade.api.repository.UsuarioPerfilRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,19 +18,20 @@ import java.util.List;
 public class UsuarioPerfilService {
 
     private final UsuarioPerfilRepository usuarioRepository;
-    private final AuditoriaPerfilRepository auditoriaRepository;
+    private final AuditoriaService auditoriaService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
     public UsuarioPerfilService(
             UsuarioPerfilRepository usuarioRepository,
-            AuditoriaPerfilRepository auditoriaRepository,
+            AuditoriaService auditoriaService,
+            BCryptPasswordEncoder passwordEncoder,
             JwtService jwtService
     ) {
         this.usuarioRepository = usuarioRepository;
-        this.auditoriaRepository = auditoriaRepository;
+        this.auditoriaService = auditoriaService;
+        this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
-        this.passwordEncoder = new BCryptPasswordEncoder();
     }
 
     public UsuarioPerfil criarUsuario(CriarUsuarioRequest request) {
@@ -40,7 +40,7 @@ public class UsuarioPerfilService {
         String emailNormalizado = request.getEmail().toLowerCase();
 
         if (usuarioRepository.existsByEmail(emailNormalizado)) {
-            throw new RuntimeException("E-mail já cadastrado.");
+            throw new ApiException(HttpStatus.CONFLICT, "E-mail ja cadastrado.");
         }
 
         UsuarioPerfil usuario = new UsuarioPerfil();
@@ -56,7 +56,7 @@ public class UsuarioPerfilService {
 
         UsuarioPerfil usuarioSalvo = usuarioRepository.save(usuario);
 
-        auditar(
+        auditoriaService.registrar(
                 usuarioSalvo.getEmail(),
                 "CADASTRO",
                 null,
@@ -64,52 +64,6 @@ public class UsuarioPerfilService {
         );
 
         return usuarioSalvo;
-    }
-
-    public LoginResponse login(LoginRequest request) {
-        validarEmailCaixa(request.getEmail());
-
-        String emailNormalizado = request.getEmail().toLowerCase();
-
-        UsuarioPerfil usuario = usuarioRepository.findByEmail(emailNormalizado)
-                .orElseThrow(() -> new RuntimeException("E-mail ou senha inválidos."));
-
-        boolean senhaValida = passwordEncoder.matches(
-                request.getSenha(),
-                usuario.getSenha()
-        );
-
-        if (!senhaValida) {
-            throw new RuntimeException("E-mail ou senha inválidos.");
-        }
-
-        String token = jwtService.gerarToken(usuario.getEmail());
-        LocalDateTime tokenExpiraEm = jwtService.calcularExpiracao();
-
-        usuario.setToken(token);
-        usuario.setTokenExpiraEm(tokenExpiraEm);
-
-        usuarioRepository.save(usuario);
-
-        auditar(
-                usuario.getEmail(),
-                "LOGIN",
-                null,
-                "Novo token JWT gerado"
-        );
-
-        return new LoginResponse(
-                "Login realizado com sucesso.",
-                token,
-                tokenExpiraEm,
-                usuario.getEmail(),
-                usuario.getTamanhoTexto(),
-                usuario.getContraste(),
-                usuario.getAparencia(),
-                usuario.getEspacamento(),
-                usuario.getGuiaLeitura(),
-                usuario.getNavegTeclado()
-        );
     }
 
     public UsuarioPerfil buscarPorEmail(BuscarPerfilRequest request, String authorizationHeader) {
@@ -120,7 +74,7 @@ public class UsuarioPerfilService {
         validarTokenDaRequisicao(emailNormalizado, authorizationHeader);
 
         return usuarioRepository.findByEmail(emailNormalizado)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Usuario nao encontrado."));
     }
 
     public UsuarioPerfil atualizarPreferencias(
@@ -134,14 +88,14 @@ public class UsuarioPerfilService {
         validarTokenDaRequisicao(emailNormalizado, authorizationHeader);
 
         UsuarioPerfil usuario = usuarioRepository.findByEmail(emailNormalizado)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Usuario nao encontrado."));
 
-        auditar(emailNormalizado, "tamanho_texto", String.valueOf(usuario.getTamanhoTexto()), String.valueOf(request.getTamanhoTexto()));
-        auditar(emailNormalizado, "contraste", String.valueOf(usuario.getContraste()), String.valueOf(request.getContraste()));
-        auditar(emailNormalizado, "aparencia", String.valueOf(usuario.getAparencia()), String.valueOf(request.getAparencia()));
-        auditar(emailNormalizado, "espacamento", String.valueOf(usuario.getEspacamento()), String.valueOf(request.getEspacamento()));
-        auditar(emailNormalizado, "guia_leitura", String.valueOf(usuario.getGuiaLeitura()), String.valueOf(request.getGuiaLeitura()));
-        auditar(emailNormalizado, "naveg_teclado", String.valueOf(usuario.getNavegTeclado()), String.valueOf(request.getNavegTeclado()));
+        auditoriaService.registrar(emailNormalizado, "tamanho_texto", String.valueOf(usuario.getTamanhoTexto()), String.valueOf(request.getTamanhoTexto()));
+        auditoriaService.registrar(emailNormalizado, "contraste", String.valueOf(usuario.getContraste()), String.valueOf(request.getContraste()));
+        auditoriaService.registrar(emailNormalizado, "aparencia", String.valueOf(usuario.getAparencia()), String.valueOf(request.getAparencia()));
+        auditoriaService.registrar(emailNormalizado, "espacamento", String.valueOf(usuario.getEspacamento()), String.valueOf(request.getEspacamento()));
+        auditoriaService.registrar(emailNormalizado, "guia_leitura", String.valueOf(usuario.getGuiaLeitura()), String.valueOf(request.getGuiaLeitura()));
+        auditoriaService.registrar(emailNormalizado, "naveg_teclado", String.valueOf(usuario.getNavegTeclado()), String.valueOf(request.getNavegTeclado()));
 
         usuario.setTamanhoTexto(request.getTamanhoTexto());
         usuario.setContraste(Boolean.TRUE.equals(request.getContraste()));
@@ -163,53 +117,35 @@ public class UsuarioPerfilService {
 
         validarTokenDaRequisicao(emailNormalizado, authorizationHeader);
 
-        return auditoriaRepository.findByUsuarioEmailOrderByDataAlteracaoDesc(emailNormalizado);
+        return auditoriaService.buscarPorUsuario(emailNormalizado);
     }
 
     private void validarTokenDaRequisicao(String email, String authorizationHeader) {
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new RuntimeException("Token não informado.");
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Token nao informado.");
         }
 
         String token = authorizationHeader.replace("Bearer ", "");
 
         UsuarioPerfil usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Usuario nao encontrado."));
 
         if (usuario.getToken() == null || !usuario.getToken().equals(token)) {
-            throw new RuntimeException("Token inválido.");
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Token invalido.");
         }
 
         if (usuario.getTokenExpiraEm() == null || usuario.getTokenExpiraEm().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("Token expirado. Faça login novamente.");
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Token expirado. Faca login novamente.");
         }
 
         if (!jwtService.tokenValido(token, email)) {
-            throw new RuntimeException("Token inválido ou expirado.");
+            throw new ApiException(HttpStatus.UNAUTHORIZED, "Token invalido ou expirado.");
         }
     }
 
     private void validarEmailCaixa(String email) {
         if (email == null || !email.toLowerCase().endsWith("@caixa.gov.br")) {
-            throw new RuntimeException("Apenas e-mails @caixa.gov.br são permitidos.");
+            throw new ApiException(HttpStatus.BAD_REQUEST, "Apenas e-mails @caixa.gov.br sao permitidos.");
         }
-    }
-
-    private void auditar(String email, String campo, String valorAnterior, String valorNovo) {
-        if (valorAnterior == null && valorNovo == null) {
-            return;
-        }
-
-        if (valorAnterior != null && valorAnterior.equals(valorNovo)) {
-            return;
-        }
-
-        AuditoriaPerfil auditoria = new AuditoriaPerfil();
-        auditoria.setUsuarioEmail(email.toLowerCase());
-        auditoria.setCampoAlterado(campo);
-        auditoria.setValorAnterior(valorAnterior);
-        auditoria.setValorNovo(valorNovo);
-
-        auditoriaRepository.save(auditoria);
     }
 }
