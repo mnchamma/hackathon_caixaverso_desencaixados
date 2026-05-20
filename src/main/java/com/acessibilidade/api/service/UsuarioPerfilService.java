@@ -8,6 +8,7 @@ import com.acessibilidade.api.repository.AuditoriaPerfilRepository;
 import com.acessibilidade.api.repository.UsuarioPerfilRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 @Service
 public class UsuarioPerfilService {
@@ -107,5 +108,11 @@ public class UsuarioPerfilService {
         auditoria.setValorNovo(valorNovo);
 
         auditoriaRepository.save(auditoria);
+    }
+    
+    public List<AuditoriaPerfil> buscarAuditoriaPorUsuario(String email) {
+        validarEmailCaixa(email);
+
+        return auditoriaRepository.findByUsuarioEmailOrderByDataAlteracaoDesc(email.toLowerCase());
     }
 }

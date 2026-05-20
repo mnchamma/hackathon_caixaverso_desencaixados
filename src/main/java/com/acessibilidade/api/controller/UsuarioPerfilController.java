@@ -7,6 +7,9 @@ import com.acessibilidade.api.service.UsuarioPerfilService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.acessibilidade.api.model.AuditoriaPerfil;
+import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/v1/perfis")
@@ -45,4 +48,10 @@ public class UsuarioPerfilController {
 
         return ResponseEntity.ok(usuario);
     }
+    @GetMapping("/{email}/auditoria")
+    public ResponseEntity<List<AuditoriaPerfil>> buscarAuditoria(@PathVariable String email) {
+        List<AuditoriaPerfil> auditorias = service.buscarAuditoriaPorUsuario(email);
+
+        return ResponseEntity.ok(auditorias);
+    }    
 }
