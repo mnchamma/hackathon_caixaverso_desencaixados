@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: acessibilidade-api
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/acessibilidade_db}
+    username: ${SPRING_DATASOURCE_USERNAME:acessibilidade_user}
+    password: ${SPRING_DATASOURCE_PASSWORD:acessibilidade_pass}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+server:
+  port: 8080
