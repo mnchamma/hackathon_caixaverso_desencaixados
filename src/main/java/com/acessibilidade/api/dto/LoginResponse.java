@@ -7,13 +7,7 @@ public class LoginResponse {
     private String mensagem;
     private String token;
     private LocalDateTime tokenExpiraEm;
-    private String email;
-    private Integer tamanhoTexto;
-    private Boolean contraste;
-    private Boolean aparencia;
-    private Float espacamento;
-    private Boolean guiaLeitura;
-    private Boolean navegTeclado;
+    private Config config;
 
     public LoginResponse(
             String mensagem,
@@ -30,13 +24,15 @@ public class LoginResponse {
         this.mensagem = mensagem;
         this.token = token;
         this.tokenExpiraEm = tokenExpiraEm;
-        this.email = email;
-        this.tamanhoTexto = tamanhoTexto;
-        this.contraste = contraste;
-        this.aparencia = aparencia;
-        this.espacamento = espacamento;
-        this.guiaLeitura = guiaLeitura;
-        this.navegTeclado = navegTeclado;
+        this.config = new Config(
+                email,
+                tamanhoTexto,
+                contraste,
+                aparencia,
+                espacamento,
+                guiaLeitura,
+                navegTeclado
+        );
     }
 
     public String getMensagem() {
@@ -51,31 +47,64 @@ public class LoginResponse {
         return tokenExpiraEm;
     }
 
-    public String getEmail() {
-        return email;
+    public Config getConfig() {
+        return config;
     }
 
-    public Integer getTamanhoTexto() {
-        return tamanhoTexto;
-    }
+    public static class Config {
 
-    public Boolean getContraste() {
-        return contraste;
-    }
+        private String preferencia;
+        private Integer tamanhoTexto;
+        private Boolean contraste;
+        private Boolean aparencia;
+        private Float espacamento;
+        private Boolean guiaLeitura;
+        private Boolean navegTeclado;
 
-    public Boolean getAparencia() {
-        return aparencia;
-    }
+        public Config(
+                String preferencia,
+                Integer tamanhoTexto,
+                Boolean contraste,
+                Boolean aparencia,
+                Float espacamento,
+                Boolean guiaLeitura,
+                Boolean navegTeclado
+        ) {
+            this.preferencia = preferencia;
+            this.tamanhoTexto = tamanhoTexto;
+            this.contraste = contraste;
+            this.aparencia = aparencia;
+            this.espacamento = espacamento;
+            this.guiaLeitura = guiaLeitura;
+            this.navegTeclado = navegTeclado;
+        }
 
-    public Float getEspacamento() {
-        return espacamento;
-    }
+        public String getPreferencia() {
+            return preferencia;
+        }
 
-    public Boolean getGuiaLeitura() {
-        return guiaLeitura;
-    }
+        public Integer getTamanhoTexto() {
+            return tamanhoTexto;
+        }
 
-    public Boolean getNavegTeclado() {
-        return navegTeclado;
+        public Boolean getContraste() {
+            return contraste;
+        }
+
+        public Boolean getAparencia() {
+            return aparencia;
+        }
+
+        public Float getEspacamento() {
+            return espacamento;
+        }
+
+        public Boolean getGuiaLeitura() {
+            return guiaLeitura;
+        }
+
+        public Boolean getNavegTeclado() {
+            return navegTeclado;
+        }
     }
 }
