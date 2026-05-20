@@ -13,22 +13,23 @@ public class CriarUsuarioRequest {
     @NotBlank
     private String senha;
 
-    private String preferencia;
-
     @NotNull
     private Integer tamanhoTexto;
 
-    private String contraste;
+    @NotNull
+    private Boolean contraste;
 
-    private String aparencia;
+    @NotNull
+    private Boolean aparencia;
 
-    private String espacamento;
+    @NotNull
+    private Float espacamento;
 
-    private Boolean destaque;
+    @NotNull
+    private Boolean guiaLeitura;
 
+    @NotNull
     private Boolean navegTeclado;
-
-    private Boolean interfaceSimplif;
 
     public String getEmail() {
         return email;
@@ -38,36 +39,28 @@ public class CriarUsuarioRequest {
         return senha;
     }
 
-    public String getPreferencia() {
-        return preferencia;
-    }
-
     public Integer getTamanhoTexto() {
         return tamanhoTexto;
     }
 
-    public String getContraste() {
+    public Boolean getContraste() {
         return contraste;
     }
 
-    public String getAparencia() {
+    public Boolean getAparencia() {
         return aparencia;
     }
 
-    public String getEspacamento() {
+    public Float getEspacamento() {
         return espacamento;
     }
 
-    public Boolean getDestaque() {
-        return destaque;
+    public Boolean getGuiaLeitura() {
+        return guiaLeitura;
     }
 
     public Boolean getNavegTeclado() {
         return navegTeclado;
-    }
-
-    public Boolean getInterfaceSimplif() {
-        return interfaceSimplif;
     }
 
     public void setEmail(String email) {
@@ -78,35 +71,27 @@ public class CriarUsuarioRequest {
         this.senha = senha;
     }
 
-    public void setPreferencia(String preferencia) {
-        this.preferencia = preferencia;
-    }
-
     public void setTamanhoTexto(Integer tamanhoTexto) {
         this.tamanhoTexto = tamanhoTexto;
     }
 
-    public void setContraste(String contraste) {
+    public void setContraste(Boolean contraste) {
         this.contraste = contraste;
     }
 
-    public void setAparencia(String aparencia) {
+    public void setAparencia(Boolean aparencia) {
         this.aparencia = aparencia;
     }
 
-    public void setEspacamento(String espacamento) {
+    public void setEspacamento(Float espacamento) {
         this.espacamento = espacamento;
     }
 
-    public void setDestaque(Boolean destaque) {
-        this.destaque = destaque;
+    public void setGuiaLeitura(Boolean guiaLeitura) {
+        this.guiaLeitura = guiaLeitura;
     }
 
     public void setNavegTeclado(Boolean navegTeclado) {
         this.navegTeclado = navegTeclado;
-    }
-
-    public void setInterfaceSimplif(Boolean interfaceSimplif) {
-        this.interfaceSimplif = interfaceSimplif;
     }
 }

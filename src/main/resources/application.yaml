@@ -22,3 +22,7 @@ spring:
 
 server:
   port: 8080
+
+jwt:
+  secret: ${JWT_SECRET:chave-super-secreta-do-hackathon-com-mais-de-32-caracteres}
+  expiration-minutes: 15

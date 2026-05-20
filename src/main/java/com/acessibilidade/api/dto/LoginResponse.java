@@ -1,79 +1,81 @@
 package com.acessibilidade.api.dto;
 
+import java.time.LocalDateTime;
+
 public class LoginResponse {
 
     private String mensagem;
+    private String token;
+    private LocalDateTime tokenExpiraEm;
     private String email;
-    private String preferencia;
     private Integer tamanhoTexto;
-    private String contraste;
-    private String aparencia;
-    private String espacamento;
-    private Boolean destaque;
+    private Boolean contraste;
+    private Boolean aparencia;
+    private Float espacamento;
+    private Boolean guiaLeitura;
     private Boolean navegTeclado;
-    private Boolean interfaceSimplif;
 
     public LoginResponse(
             String mensagem,
+            String token,
+            LocalDateTime tokenExpiraEm,
             String email,
-            String preferencia,
             Integer tamanhoTexto,
-            String contraste,
-            String aparencia,
-            String espacamento,
-            Boolean destaque,
-            Boolean navegTeclado,
-            Boolean interfaceSimplif
+            Boolean contraste,
+            Boolean aparencia,
+            Float espacamento,
+            Boolean guiaLeitura,
+            Boolean navegTeclado
     ) {
         this.mensagem = mensagem;
+        this.token = token;
+        this.tokenExpiraEm = tokenExpiraEm;
         this.email = email;
-        this.preferencia = preferencia;
         this.tamanhoTexto = tamanhoTexto;
         this.contraste = contraste;
         this.aparencia = aparencia;
         this.espacamento = espacamento;
-        this.destaque = destaque;
+        this.guiaLeitura = guiaLeitura;
         this.navegTeclado = navegTeclado;
-        this.interfaceSimplif = interfaceSimplif;
     }
 
     public String getMensagem() {
         return mensagem;
     }
 
-    public String getEmail() {
-        return email;
+    public String getToken() {
+        return token;
     }
 
-    public String getPreferencia() {
-        return preferencia;
+    public LocalDateTime getTokenExpiraEm() {
+        return tokenExpiraEm;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public Integer getTamanhoTexto() {
         return tamanhoTexto;
     }
 
-    public String getContraste() {
+    public Boolean getContraste() {
         return contraste;
     }
 
-    public String getAparencia() {
+    public Boolean getAparencia() {
         return aparencia;
     }
 
-    public String getEspacamento() {
+    public Float getEspacamento() {
         return espacamento;
     }
 
-    public Boolean getDestaque() {
-        return destaque;
+    public Boolean getGuiaLeitura() {
+        return guiaLeitura;
     }
 
     public Boolean getNavegTeclado() {
         return navegTeclado;
-    }
-
-    public Boolean getInterfaceSimplif() {
-        return interfaceSimplif;
     }
 }

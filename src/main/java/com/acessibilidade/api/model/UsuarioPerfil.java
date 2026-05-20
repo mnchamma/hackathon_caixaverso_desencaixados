@@ -17,28 +17,26 @@ public class UsuarioPerfil {
     @Column(nullable = false, length = 255)
     private String senha;
 
-    @Column(length = 100)
-    private String preferencia;
-
     @Column(name = "tamanho_texto")
     private Integer tamanhoTexto;
 
-    @Column(length = 50)
-    private String contraste;
+    private Boolean contraste = false;
 
-    @Column(length = 50)
-    private String aparencia;
+    private Boolean aparencia = false;
 
-    @Column(length = 50)
-    private String espacamento;
+    private Float espacamento;
 
-    private Boolean destaque = false;
+    @Column(name = "guia_leitura")
+    private Boolean guiaLeitura = false;
 
     @Column(name = "naveg_teclado")
     private Boolean navegTeclado = false;
 
-    @Column(name = "interface_simplif")
-    private Boolean interfaceSimplif = false;
+    @Column(name = "token", columnDefinition = "TEXT")
+    private String token;
+
+    @Column(name = "token_expira_em")
+    private LocalDateTime tokenExpiraEm;
 
     @Column(name = "criado_em")
     private LocalDateTime criadoEm;
@@ -69,36 +67,36 @@ public class UsuarioPerfil {
         return senha;
     }
 
-    public String getPreferencia() {
-        return preferencia;
-    }
-
     public Integer getTamanhoTexto() {
         return tamanhoTexto;
     }
 
-    public String getContraste() {
+    public Boolean getContraste() {
         return contraste;
     }
 
-    public String getAparencia() {
+    public Boolean getAparencia() {
         return aparencia;
     }
 
-    public String getEspacamento() {
+    public Float getEspacamento() {
         return espacamento;
     }
 
-    public Boolean getDestaque() {
-        return destaque;
+    public Boolean getGuiaLeitura() {
+        return guiaLeitura;
     }
 
     public Boolean getNavegTeclado() {
         return navegTeclado;
     }
 
-    public Boolean getInterfaceSimplif() {
-        return interfaceSimplif;
+    public String getToken() {
+        return token;
+    }
+
+    public LocalDateTime getTokenExpiraEm() {
+        return tokenExpiraEm;
     }
 
     public LocalDateTime getCriadoEm() {
@@ -121,36 +119,36 @@ public class UsuarioPerfil {
         this.senha = senha;
     }
 
-    public void setPreferencia(String preferencia) {
-        this.preferencia = preferencia;
-    }
-
     public void setTamanhoTexto(Integer tamanhoTexto) {
         this.tamanhoTexto = tamanhoTexto;
     }
 
-    public void setContraste(String contraste) {
+    public void setContraste(Boolean contraste) {
         this.contraste = contraste;
     }
 
-    public void setAparencia(String aparencia) {
+    public void setAparencia(Boolean aparencia) {
         this.aparencia = aparencia;
     }
 
-    public void setEspacamento(String espacamento) {
+    public void setEspacamento(Float espacamento) {
         this.espacamento = espacamento;
     }
 
-    public void setDestaque(Boolean destaque) {
-        this.destaque = destaque;
+    public void setGuiaLeitura(Boolean guiaLeitura) {
+        this.guiaLeitura = guiaLeitura;
     }
 
     public void setNavegTeclado(Boolean navegTeclado) {
         this.navegTeclado = navegTeclado;
     }
 
-    public void setInterfaceSimplif(Boolean interfaceSimplif) {
-        this.interfaceSimplif = interfaceSimplif;
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public void setTokenExpiraEm(LocalDateTime tokenExpiraEm) {
+        this.tokenExpiraEm = tokenExpiraEm;
     }
 
     public void setCriadoEm(LocalDateTime criadoEm) {
