@@ -25,7 +25,7 @@ server:
 
 jwt:
   secret: ${JWT_SECRET:chave-super-secreta-do-hackathon-com-mais-de-32-caracteres}
-  expiration-minutes: 15
+  expiration-minutes: ${JWT_EXPIRATION_MINUTES:480}
 
 app:
   cors:

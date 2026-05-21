@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -129,14 +128,6 @@ public class UsuarioPerfilService {
 
         UsuarioPerfil usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Usuario nao encontrado."));
-
-        if (usuario.getToken() == null || !usuario.getToken().equals(token)) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Token invalido.");
-        }
-
-        if (usuario.getTokenExpiraEm() == null || usuario.getTokenExpiraEm().isBefore(LocalDateTime.now())) {
-            throw new ApiException(HttpStatus.UNAUTHORIZED, "Token expirado. Faca login novamente.");
-        }
 
         if (!jwtService.tokenValido(token, email)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Token invalido ou expirado.");
