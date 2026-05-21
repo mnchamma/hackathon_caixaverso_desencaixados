@@ -50,6 +50,17 @@ A documentacao interativa fica em:
 http://localhost:8080/swagger-ui.html
 ```
 
+## Usuario padrao para testes
+
+Ao iniciar a API com o banco configurado, o sistema cria automaticamente um usuario padrao caso ele ainda nao exista:
+
+```text
+login: usuario@caixa.gov.br
+senha: SenhaForte123
+```
+
+Esse usuario foi criado para que a banca avaliadora consiga realizar testes de usabilidade no sistema sem depender do fluxo de cadastro manual. A criacao acontece apenas quando o registro ainda nao existe no banco, evitando duplicidade nas proximas execucoes.
+
 ## Configuracoes
 
 As principais configuracoes ficam em `src/main/resources/application.yaml`.

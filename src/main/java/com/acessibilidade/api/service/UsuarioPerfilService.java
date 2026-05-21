@@ -126,8 +126,9 @@ public class UsuarioPerfilService {
 
         String token = authorizationHeader.replace("Bearer ", "");
 
-        UsuarioPerfil usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, "Usuario nao encontrado."));
+        if (!usuarioRepository.existsByEmail(email)) {
+            throw new ApiException(HttpStatus.NOT_FOUND, "Usuario nao encontrado.");
+        }
 
         if (!jwtService.tokenValido(token, email)) {
             throw new ApiException(HttpStatus.UNAUTHORIZED, "Token invalido ou expirado.");
